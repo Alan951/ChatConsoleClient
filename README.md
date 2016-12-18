@@ -1,7 +1,7 @@
 # ChatConsoleClient
 --------------------
 ChatConsoleClient es un chat que utiliza la tecnología WebSockets y es parte de mi otro proyect 
-ChatConsoleClient fue desarrollado en Eclipse y para importarlo debes de hacer lo siguiente
+ChatConsoleClient fue desarrollado en Eclipse y es parte de mi otro proyecto [ChatWebSocket](https://github.com/Alan951/ChatWebSocket)
 
 ### Importar proyecto
 ---------------------
