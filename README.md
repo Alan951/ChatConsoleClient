@@ -15,7 +15,7 @@ En mx.jalan.App/App existe una variable String llamada URL, en ella contiene la 
 
 ### Comandos
 -------------
-´´´
+```
 IMPORTANTE: Solo es posible ingresar un comando a la vez y estos van seguidos de una diagonal. Ej: \conn Jorge
 [Comando] - [Descripción]
 /conn <nombre usuario> ó /connect <nombre usuario> - Sirve para conectarse al websocket. Es necesario especificar el nombre de usuario.
@@ -25,4 +25,4 @@ IMPORTANTE: Solo es posible ingresar un comando a la vez y estos van seguidos de
 /pm <nombre usuario> - Envia un mensaje privado a un usuario en especifico.
 /help - Ver lista de todos los comandos.
 /exit - Salir del programa.
-´´´
+```
