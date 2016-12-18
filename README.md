@@ -26,3 +26,7 @@ IMPORTANTE: Solo es posible ingresar un comando a la vez y estos van seguidos de
 /help - Ver lista de todos los comandos.
 /exit - Salir del programa.
 ```
+### Imagenes
+------------
+![alt text](https://github.com/Alan951/ChatConsoleClient/img/imgclient.png)
+![alt text](https://github.com/Alan951/ChatConsoleClient/img/commands.png)
