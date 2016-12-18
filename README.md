@@ -11,7 +11,7 @@ Next -> Next -> Next -> Import existing Eclipse projects -> Finish
 
 ### Importante
 ----------------
-En mx.jalan.App/App existe una variable String llamada URL, en ella contiene la URL del websocket, este url es la dirección del websocket.
+En mx.jalan.App/App existe una variable String llamada URL, en ella contiene la URL del websocket.
 
 ### Comandos
 -------------
