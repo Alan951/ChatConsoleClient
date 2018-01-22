@@ -17,17 +17,21 @@ public class App extends Application{
 		FXMLLoader loader = new FXMLLoader();
 		
 		
-		loader.setLocation(this.getClass().getResource("../Controller/Console.fxml"));
+		loader.setLocation(this.getClass().getResource("/Console.fxml"));
 		
 		try{
 			anchorP = (AnchorPane)loader.load();
 		}catch(Exception e){
 			e.printStackTrace();
+			
+			System.out.println(loader.getLocation());
+			
+			System.exit(-1);
 		}
 		
 		Scene scene = new Scene(anchorP);
 		
-		scene.getStylesheets().add(this.getClass().getResource("../Controller/Style.css").toString());
+		scene.getStylesheets().add(this.getClass().getResource("/Style.css").toString());
 		
 		stage.setTitle("Console Chat with WebSocket");
 		stage.setScene(scene);

@@ -30,7 +30,7 @@ public class ConsoleController {
 	
 	//private Usuario usuario;
 	
-	private static final String URL = "ws://localhost:8080/ChatWebSocket/chat";
+	private static final String URL = "ws://192.168.0.2:8080/ChatWebSocket/chat";
 	
 	@FXML
 	public void initialize(){
@@ -98,11 +98,13 @@ public class ConsoleController {
 					error.setStyle("-fx-font-weight: bold; "); 
 					
 					consoleArea.getChildren().add(error);
+					ce.printStackTrace();
 				}catch(Exception e){
 					Text error = new Text("[Error al conectar WS]: "+e);
 					error.setStyle("-fx-font-weight: bold; ");
 					
 					consoleArea.getChildren().add(error);
+					e.printStackTrace();
 				}
 			}else{
 				Text errorCommand = new Text("[Actualmente esta conectado a: \""+client.getSession().getRequestURI().toString()+"\"]\n");
