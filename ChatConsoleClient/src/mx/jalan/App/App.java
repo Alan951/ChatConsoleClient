@@ -31,7 +31,7 @@ public class App extends Application{
 		
 		Scene scene = new Scene(anchorP);
 		
-		scene.getStylesheets().add(this.getClass().getResource("/Style.css").toString());
+		scene.getStylesheets().add(this.getClass().getResource("/style.css").toString());
 		
 		stage.setTitle("Console Chat with WebSocket");
 		stage.setScene(scene);
