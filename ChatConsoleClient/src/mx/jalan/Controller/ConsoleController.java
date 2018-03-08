@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import mx.jalan.Model.Usuario;
+import mx.jalan.Model.User;
 import mx.jalan.WebSocket.ClientChat;
 import javafx.scene.control.ScrollPane;
 
@@ -26,11 +26,9 @@ public class ConsoleController {
 	
 	private ClientChat client;
 	
-	private Set<Usuario> users = new HashSet<Usuario>();
+	private Set<User> users = new HashSet<User>();
 	
-	//private Usuario usuario;
-	
-	private static final String URL = "ws://192.168.0.2:8080/ChatWebSocket/chat";
+	private static final String URL = "ws://192.168.0.6:8080/ChatWebSocket/chat";
 	
 	@FXML
 	public void initialize(){
@@ -81,9 +79,9 @@ public class ConsoleController {
 			String usr = data[1];
 			
 			
-			if(client == null || client.getSession() == null){
+			if(client == null || client.getSession() == null || !client.getSession().isOpen()){
 				try{
-					client = new ClientChat(new URI(URL), new Usuario(usr));
+					client = new ClientChat(new URI(URL), new User(usr));
 					client.setConsole(this);
 					Text ok = new Text("[Ha sido conectado al WS]\n");
 					
@@ -187,7 +185,7 @@ public class ConsoleController {
 		return help;
 	}
 	
-	public Set<Usuario> getUsers(){
+	public Set<User> getUsers(){
 		return users;
 	}
 	

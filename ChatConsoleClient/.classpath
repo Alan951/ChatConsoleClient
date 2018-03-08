@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="libs/tyrus-container-grizzly-client-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/tyrus-core-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/tyrus-spi-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ck/git/ChatConsoleClient/ChatConsoleClient/libs/gson-2.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,22 +19,28 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import com.google.gson.Gson;
+
 import mx.jalan.Controller.ConsoleController;
-import mx.jalan.Model.Usuario;
+import mx.jalan.Model.Message;
+import mx.jalan.Model.MessageHelper;
+import mx.jalan.Model.User;
 
 @ClientEndpoint
 public class ClientChat {
 	
 	private Session session;
 	
-	private Usuario usuario;
+	private User usuario;
 	
 	private ConsoleController cc;
 	
 	private String usersString;
 	
-	public ClientChat(URI url, Usuario usuario)throws Exception{
-		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+	private WebSocketContainer container;
+	
+	public ClientChat(URI url, User usuario)throws Exception{
+		container = ContainerProvider.getWebSocketContainer();
 		container.connectToServer(this, url);
 		
 		this.usuario = usuario;
@@ -46,8 +52,9 @@ public class ClientChat {
 	}
 	
 	@OnClose
-	public void onClose(Session userSession, CloseReason reason){		
-		this.session = null;
+	public void onClose(Session userSession, CloseReason reason) throws IOException{		
+		this.session.close();
+		//this.session = null;
 	}
 	
 	@OnError
@@ -79,11 +86,10 @@ public class ClientChat {
 			}if(jsonMessage.getString("action").equals("updateData")){
 				JsonArray jarr = jsonMessage.getJsonArray("data");
 				cc.getUsers().clear();
-				//cc.getUsers().addAll(jarr.);
 				usersString = "Usuarios conectados: ";
 				jarr.forEach((jsonvalue) -> {
 					JsonObject js = (JsonObject)jsonvalue;
-					Usuario userL = new Usuario(js.getString("usuario"));
+					User userL = new User(js.getString("usuario"));
 					cc.getUsers().add(userL);
 					usersString += "["+userL.getNombre()+"] ";
 				});
@@ -99,7 +105,30 @@ public class ClientChat {
 		}
 	}
 	
+	public void onMessageN(String msg){
+		Message message = new Gson().fromJson(msg, Message.class);
+		
+		System.out.println("[DG - OnMessage]: "+message);
+		
+		switch(message.getAction()){
+			case MessageHelper.SIMPLE_MESSAGE:
+				break;
+			case MessageHelper.RES_CHANGES:
+				
+				break;
+		}
+	}
+	
 	public void sendMessage(JsonObject message){
+		try{
+			System.out.println("[DG - SendMessage]: "+message.toString());
+			this.session.getBasicRemote().sendText(message.toString());
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendMessage(Message message){
 		try{
 			System.out.println("[DG - SendMessage]: "+message.toString());
 			this.session.getBasicRemote().sendText(message.toString());
@@ -166,7 +195,7 @@ public class ClientChat {
 		return cc;
 	}
 	
-	public Usuario getUser(){
+	public User getUser(){
 		return usuario;
 	}
 }
