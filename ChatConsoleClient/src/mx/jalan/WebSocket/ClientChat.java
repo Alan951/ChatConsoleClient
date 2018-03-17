@@ -63,7 +63,7 @@ public class ClientChat {
 		System.out.println(err);
 	}
 	
-	@OnMessage
+	/*@OnMessage
 	public void onMessage(String message){
 		try(JsonReader reader = Json.createReader(new StringReader(message))){
 			JsonObject jsonMessage = reader.readObject();
@@ -103,18 +103,29 @@ public class ClientChat {
 				cc.appendMessageText(1, contentMessage);
 			}
 		}
-	}
+	}*/
 	
-	public void onMessageN(String msg){
+	@OnMessage
+	public void onMessage(String msg){
 		Message message = new Gson().fromJson(msg, Message.class);
 		
 		System.out.println("[DG - OnMessage]: "+message);
 		
 		switch(message.getAction()){
 			case MessageHelper.SIMPLE_MESSAGE:
+				if(message.getUserSource() == null){ //Message from Server
+					cc.appendMessageText(-1, "[SERVER]: " + message.getMessage());
+				}else if(message.getUserDestination() == null){ //Message for All
+					cc.appendMessageText(-1, message.getMessage());
+				}else{ //Private message
+					cc.appendMessageText(-1, "[PM de \""+ message.getUserSource().getNombre() +"\"]" + message.getMessage());				
+				}
 				break;
 			case MessageHelper.RES_CHANGES:
 				
+				break;
+			case MessageHelper.ERROR_MESSAGE:
+				cc.appendMessageText(1,  message.getMessage());
 				break;
 		}
 	}

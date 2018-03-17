@@ -158,6 +158,8 @@ public class ConsoleController {
 		}
 	}
 	
+	
+	
 	public void appendMessageText(int special, String msg){
 		Platform.runLater(() -> {
 			Text text = new Text(msg);
