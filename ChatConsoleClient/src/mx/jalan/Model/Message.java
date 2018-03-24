@@ -6,8 +6,8 @@ public class Message {
 	private int code;
     private String action;
     private String message;
-    private User userSource;
-    private User userDestination;
+    private transient User userSource;
+    private transient User userDestination;
     private EncryptionProperties encryptProps;
     private LocalDateTime timestamp;
 
@@ -105,4 +105,11 @@ public class Message {
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
+
+	@Override
+	public String toString() {
+		return "Message [code=" + code + ", action=" + action + ", message=" + message + ", userSource=" + userSource
+				+ ", userDestination=" + userDestination + ", encryptProps=" + encryptProps + ", timestamp=" + timestamp
+				+ "]";
+	}
 }

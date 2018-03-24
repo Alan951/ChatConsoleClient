@@ -6,12 +6,21 @@ import mx.jalan.Model.User;
 
 public class MessageConstructor {
 
-	public static Message createPrivateMessage(String msg, User usuario){
-		return null;
+	public static Message createPrivateMessage(String msg, User usrDest){
+		Message message = new Message();
+		message.setAction(MessageHelper.SIMPLE_MESSAGE);
+		message.setUserDestination(usrDest);
+		message.setMessage(msg);
+		
+		return message;
 	}
 	
 	public static Message createMessage(String msg){
-		return null;
+		Message message = new Message();
+		message.setAction(MessageHelper.SIMPLE_MESSAGE);
+		message.setMessage(msg);
+		
+		return message;
 	}
 	
 	public static Message createRequestChangesMessage(){

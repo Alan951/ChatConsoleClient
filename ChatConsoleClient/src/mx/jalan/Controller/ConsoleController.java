@@ -12,8 +12,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+import mx.jalan.Model.Message;
+import mx.jalan.Model.TextMessage;
 import mx.jalan.Model.User;
 import mx.jalan.WebSocket.ClientChat;
+import mx.jalan.WebSocket.MessageConstructor;
 import javafx.scene.control.ScrollPane;
 
 
@@ -30,6 +34,9 @@ public class ConsoleController {
 	
 	private static final String URL = "ws://192.168.0.6:8080/ChatWebSocket/chat";
 	
+	private final static String CHAT_TITLE = "Console Chat with WebSocket";
+	private Stage stage;
+	
 	@FXML
 	public void initialize(){
 		scrollPane.setFitToWidth(true);
@@ -41,7 +48,11 @@ public class ConsoleController {
 		consoleArea.getChildren().clear();
 	}
 	
-	public void init(){}
+	public void init(Stage stage){
+		this.stage = stage;
+		
+		stage.setTitle(CHAT_TITLE);
+	}
 	
 	public ConsoleController(){}
 	
@@ -55,17 +66,24 @@ public class ConsoleController {
 			command(input);
 		}else{
 			String content = input;
-			Text texto = new Text(client.getUser().getNombre()+": "+content+"\n");
+			//Text texto = new Text(client.getUser().getNombre()+": "+content);
+			String msg = null;
 			
-			consoleArea.getChildren().add(texto);
+			if(client != null)
+				msg = client.getUser().getNombre()+": "+content;
+			else
+				msg = content;
 			
-			//TODO verificar que el usuario este logueado
-			client.sendMessage(client.createMessage(content));
+			appendMessageText(-1, msg);
+			//consoleArea.getChildren().add(texto);
+			if(client != null)
+				client.sendMessage(MessageConstructor.createMessage(content));
+			//client.sendMessage(client.createMessage(content));
 		}
 	}
 	
 	private void command(String command){
-		if(command.equalsIgnoreCase("/clear")){
+		if(command.equalsIgnoreCase("/clear") || command.equalsIgnoreCase("/cls")){
 			consoleArea.getChildren().clear();
 		}else if(command.equalsIgnoreCase("/help") || command.equalsIgnoreCase("/h") || command.equalsIgnoreCase("/ayuda")){
 			Text text = new Text(getHelp());
@@ -89,7 +107,9 @@ public class ConsoleController {
 							+ "-fx-fill: rgb(81, 48, 45);");
 					consoleArea.getChildren().add(ok);
 					
-					client.sendMessage(client.createNewUsr());
+					//client.sendMessage(client.createNewUsr());
+					client.sendMessage(MessageConstructor.registerNewUser());
+					stage.setTitle(CHAT_TITLE+" | "+client.getUser().getNombre());
 					
 				}catch(ConnectException ce){
 					Text error = new Text("[Error al conectar WS]: "+ce);
@@ -125,10 +145,9 @@ public class ConsoleController {
 				
 				consoleArea.getChildren().add(ok);
 				client.disconnect();
+				stage.setTitle(CHAT_TITLE);
 			}
-		}else if(command.startsWith("/pm".toLowerCase())){
-			//TODO verificar que este conectado
-			
+		}else if(command.startsWith("/pm".toLowerCase())){			
 			String []data = command.split(" ");
 			String usr = data[1];
 			String msg = "";
@@ -140,14 +159,20 @@ public class ConsoleController {
 			
 			msg = msg.trim();
 			
-			client.sendMessage(client.createPrivateMessage(msg, usr));
+			if(msg == null || msg.isEmpty()){
+				appendMessageText(1, "Falto especificar el mensaje");
+				return;
+			}
 			
-			appendMessageText(-1, "[PM para \""+usr+"\"] "+client.getUser().getNombre()+": "+msg+"\n");
+			//client.sendMessage(client.createPrivateMessage(msg, usr));
+			client.sendMessage(MessageConstructor.createPrivateMessage(msg, new User(usr)));
+			
+			appendMessageText(-1, "[PM para \""+usr+"\"] "+client.getUser().getNombre()+": "+msg);
 		}else if(command.equalsIgnoreCase("/online")){
 			//TODO verificar que este conectado
 			
 			if(users.size() == 0){
-				client.sendMessage(client.creatRequestChanges());
+				//client.sendMessage(client.creatRequestChanges());
 			}
 			
 		}else{
@@ -164,13 +189,29 @@ public class ConsoleController {
 		Platform.runLater(() -> {
 			Text text = new Text(msg);
 			
+			
 			if(special == 1){ //error style
-				text.setStyle("-fx-font-weight: bold; -fx-text-stroke-color: #fff; -fx-fill: red"); 
+				//text.setStyle("-fx-font-weight: bold; -fx-text-stroke-color: #fff; -fx-fill: #cc0000"); 
+				text.setStyle("-fx-font-weight: bold; -fx-text-stroke-color: #fff;");
 			}
 			
 			consoleArea.getChildren().add(text);
+			consoleArea.getChildren().add(new Text("\n"));
 		});
 	}
+	
+	public void appendMessageText(int special, TextMessage textMessage){
+		Platform.runLater(() -> {			
+			if(special == 1) //error style 
+				textMessage.setStyle("-fx-font-weight: bold; -fx-text-stroke-color: #fff;");
+			
+			
+			consoleArea.getChildren().add(textMessage);
+			consoleArea.getChildren().add(new Text("\n"));
+		});
+	}
+	
+	
 	
 	private String getHelp(){
 		String help = "";

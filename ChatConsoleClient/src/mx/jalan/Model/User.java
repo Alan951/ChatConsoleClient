@@ -4,7 +4,7 @@ import javax.websocket.Session;
 
 public class User {
     private String nombre;
-    private Session session;
+    private transient Session session;
 
     public User(){}
     
@@ -28,6 +28,10 @@ public class User {
 	public void setSession(Session session){
 		this.session = session;
 	}
-    
+
+	@Override
+	public String toString() {
+		return "User [nombre=" + nombre + "]";
+	}    
     
 }
