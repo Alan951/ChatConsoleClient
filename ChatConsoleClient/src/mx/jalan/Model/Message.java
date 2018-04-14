@@ -6,8 +6,8 @@ public class Message {
 	private int code;
     private String action;
     private String message;
-    private transient User userSource;
-    private transient User userDestination;
+    private User userSource;
+    private User userDestination;
     private EncryptionProperties encryptProps;
     private LocalDateTime timestamp;
 

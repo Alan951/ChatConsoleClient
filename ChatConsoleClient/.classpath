@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/tyrus-spi-1.3.jar"/>
 	<classpathentry kind="lib" path="libs/gson-2.8.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="C:/Users/Ck/git/ChatConsoleClient/ChatConsoleClient/libs/commons-lang3-3.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

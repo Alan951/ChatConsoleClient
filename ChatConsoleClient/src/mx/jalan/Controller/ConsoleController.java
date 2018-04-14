@@ -32,7 +32,8 @@ public class ConsoleController {
 	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://192.168.0.6:8080/ChatWebSocket/chat";
+	private static final String URL = "ws://192.168.0.3"
+			+ ":8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
 	private Stage stage;
@@ -92,6 +93,11 @@ public class ConsoleController {
 		}else if(command.equalsIgnoreCase("/exit") || command.equalsIgnoreCase("/salir")){
 			Platform.setImplicitExit(false);
 			Platform.exit();
+		}else if(command.equalsIgnoreCase("/en_encryption") || command.equalsIgnoreCase("/en_cipher")){
+			String cipherName = command.split(" ")[1];
+			
+			
+			
 		}else if(command.startsWith("/connect".toLowerCase()) || command.startsWith("/conn".toLowerCase())){
 			String []data = command.split(" ");
 			String usr = data[1];

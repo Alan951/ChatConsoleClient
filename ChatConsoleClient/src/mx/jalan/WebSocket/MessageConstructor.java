@@ -37,4 +37,10 @@ public class MessageConstructor {
 		return message;
 	}
 	
+	public static Message enableEncryption(){
+		Message message = new Message();
+		//message.setAction(MessageHelper.);
+		return null;
+	}
+	
 }

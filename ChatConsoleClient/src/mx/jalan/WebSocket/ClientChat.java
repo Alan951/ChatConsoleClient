@@ -26,6 +26,7 @@ import mx.jalan.Controller.ConsoleController;
 import mx.jalan.Model.Message;
 import mx.jalan.Model.MessageHelper;
 import mx.jalan.Model.User;
+import mx.jalan.Security.Algorithms.CipherBase;
 
 @ClientEndpoint
 public class ClientChat {
@@ -35,6 +36,8 @@ public class ClientChat {
 	private ConsoleController cc;
 	private String usersString;
 	private WebSocketContainer container;
+	
+	private CipherBase cipher;
 	
 	public ClientChat(URI url, User usuario)throws Exception{
 		container = ContainerProvider.getWebSocketContainer();
@@ -113,6 +116,14 @@ public class ClientChat {
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+	
+	public void setCipher(CipherBase cipher){
+		this.cipher = cipher;
+	}
+	
+	public CipherBase getCipher(){
+		return this.cipher;
 	}
 	
 	public void setConsole(ConsoleController cc){
