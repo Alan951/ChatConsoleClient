@@ -13,11 +13,11 @@
 	-fx-background-color: rgba(255, 255, 255, 0.10);
 }
 
-.scroll-pane > .viewport {
+.scroll-pane > .viewport{
    -fx-background-color: transparent;
 }
 
-.scroll-pane {
+.scroll-pane, .list-view  {
 	-fx-background-radius: 5px;
 	-fx-background-color: rgba(255, 255, 255, 0.40);
 }

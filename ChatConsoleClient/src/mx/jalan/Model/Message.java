@@ -8,7 +8,7 @@ public class Message {
     private String message;
     private User userSource;
     private User userDestination;
-    private EncryptionProperties encryptProps;
+    private EncryptionAlgorithm encryptProps;
     private LocalDateTime timestamp;
 
     // Default constructor
@@ -17,7 +17,7 @@ public class Message {
     /*
         Constructor to create message from user to other user by private message
     */
-    public Message(String action, String message, User userSource, User userDestination, EncryptionProperties encryptProps, LocalDateTime timestamp, int code) {
+    public Message(String action, String message, User userSource, User userDestination, EncryptionAlgorithm encryptProps, LocalDateTime timestamp, int code) {
         this.action = action;
         this.message = message;
         this.userSource = userSource;
@@ -30,7 +30,7 @@ public class Message {
     /*
         Constructor to create message from user to all
     */
-    public Message(String action, String message, User userSource, EncryptionProperties encryptProps, LocalDateTime timestamp, int code) {
+    public Message(String action, String message, User userSource, EncryptionAlgorithm encryptProps, LocalDateTime timestamp, int code) {
         this.action = action;
         this.message = message;
         this.userSource = userSource;
@@ -42,7 +42,7 @@ public class Message {
     /*
         Constructor to create message from server
     */
-    public Message(String action, String message, EncryptionProperties encryptProps, int code){
+    public Message(String action, String message, EncryptionAlgorithm encryptProps, int code){
         this.action = action;
         this.message = message;
         this.encryptProps = encryptProps;
@@ -50,8 +50,9 @@ public class Message {
         
     }
     
-    public void setAction(String action){
+    public Message setAction(String action){
         this.action = action;
+        return this;
     }
     
     public String getAction(){
@@ -70,8 +71,10 @@ public class Message {
         return message;
     }
 
-    public void setMessage(String message) {
+    public Message setMessage(String message) {
         this.message = message;
+        
+        return this;
     }
 
     public User getUserSource() {
@@ -90,11 +93,11 @@ public class Message {
         this.userDestination = userDestination;
     }
 
-    public EncryptionProperties getEncryptProps() {
+    public EncryptionAlgorithm getEncryptProps() {
         return encryptProps;
     }
 
-    public void setEncryptProps(EncryptionProperties encryptProps) {
+    public void setEncryptProps(EncryptionAlgorithm encryptProps) {
         this.encryptProps = encryptProps;
     }
 

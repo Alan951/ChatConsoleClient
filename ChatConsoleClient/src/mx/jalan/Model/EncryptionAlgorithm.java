@@ -2,13 +2,13 @@ package mx.jalan.Model;
 
 import java.util.Map;
 
-public class EncryptionProperties {
+public class EncryptionAlgorithm {
     
     private String algorithm;
     private int algorithmType;
     private Map<String, String> properties;
 
-    public EncryptionProperties(String algorithm, int algorithmType, Map<String, String> properties) {
+    public EncryptionAlgorithm(String algorithm, int algorithmType, Map<String, String> properties) {
         this.algorithm = algorithm;
         this.algorithmType = algorithmType;
         this.properties = properties;

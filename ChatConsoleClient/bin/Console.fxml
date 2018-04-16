@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.TextFlow?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.jalan.Controller.ConsoleController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.jalan.Controller.ConsoleController">
    <children>
-      <TextField fx:id="txtLine" onAction="#onEnter" layoutX="14.0" layoutY="368.0" prefHeight="25.0" prefWidth="573.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" />
-      <ScrollPane fx:id="scrollPane" layoutX="14.0" layoutY="14.0" pannable="true" prefHeight="341.0" prefWidth="573.0" styleClass="main" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="14.0">
+      <TextField fx:id="txtLine" layoutX="14.0" layoutY="368.0" onAction="#onEnter" prefHeight="25.0" prefWidth="573.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" />
+      <ScrollPane fx:id="scrollPane" layoutX="14.0" layoutY="36.0" pannable="true" prefHeight="319.0" prefWidth="448.0" styleClass="main" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="138.0" AnchorPane.topAnchor="36.0">
         <content>
           <TextFlow fx:id="consoleArea" prefHeight="268.0" prefWidth="525.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
         </content>
       </ScrollPane>
+      <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Conectar" />
+                  <MenuItem mnemonicParsing="false" text="Desconectar" />
+                  <MenuItem mnemonicParsing="false" onAction="#onOpenCipherMng" text="Gestión Cifrado" />
+                  <MenuItem mnemonicParsing="false" text="Salir" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Como usar" />
+                  <MenuItem mnemonicParsing="false" text="Acerca de" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ListView layoutX="470.0" layoutY="36.0" prefHeight="319.0" prefWidth="123.0" />
    </children>
 </AnchorPane>

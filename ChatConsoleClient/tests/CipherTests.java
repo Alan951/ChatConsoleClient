@@ -14,7 +14,7 @@ public class CipherTests {
 		CipherBase<String, Long> cipher;
 		CipherFactory<String, Long> factory = new CipherFactory<>();
 		
-		cipher = factory.getCipher(EncryptionAlgorithms.CASER);
+		cipher = factory.getCipher(EncryptionAlgorithms.CAESAR);
 		cipher.setKey(1L);
 		
 		String text = "ABCDEFGHIJQLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz1234567890!#$%&()=?¡+---AABB";

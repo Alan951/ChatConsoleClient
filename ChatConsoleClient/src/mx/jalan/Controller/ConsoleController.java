@@ -8,16 +8,20 @@ import java.util.Set;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.jalan.Model.Message;
 import mx.jalan.Model.TextMessage;
 import mx.jalan.Model.User;
 import mx.jalan.WebSocket.ClientChat;
 import mx.jalan.WebSocket.MessageConstructor;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 
 
@@ -65,9 +69,9 @@ public class ConsoleController {
 		
 		if(input.startsWith("/")){ //Chaca que el input sea un comando
 			command(input);
-		}else{
+		}else{ //SI no es un comando, es un mensaje
 			String content = input;
-			//Text texto = new Text(client.getUser().getNombre()+": "+content);
+	
 			String msg = null;
 			
 			if(client != null)
@@ -76,10 +80,9 @@ public class ConsoleController {
 				msg = content;
 			
 			appendMessageText(-1, msg);
-			//consoleArea.getChildren().add(texto);
+			
 			if(client != null)
 				client.sendMessage(MessageConstructor.createMessage(content));
-			//client.sendMessage(client.createMessage(content));
 		}
 	}
 	
@@ -93,11 +96,6 @@ public class ConsoleController {
 		}else if(command.equalsIgnoreCase("/exit") || command.equalsIgnoreCase("/salir")){
 			Platform.setImplicitExit(false);
 			Platform.exit();
-		}else if(command.equalsIgnoreCase("/en_encryption") || command.equalsIgnoreCase("/en_cipher")){
-			String cipherName = command.split(" ")[1];
-			
-			
-			
 		}else if(command.startsWith("/connect".toLowerCase()) || command.startsWith("/conn".toLowerCase())){
 			String []data = command.split(" ");
 			String usr = data[1];
@@ -234,8 +232,38 @@ public class ConsoleController {
 		return help;
 	}
 	
+	@FXML
+	public void onOpenCipherMng(){
+		System.out.println("onOpenCipherMng");
+		
+		FXMLLoader loader = new FXMLLoader();
+		AnchorPane anchor = null;
+		
+		loader.setLocation(this.getClass().getResource("/CipherMng.fxml"));
+		
+		try{
+			anchor = (AnchorPane) loader.load();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		Scene scene = new Scene(anchor);
+
+		((CipherMngController)loader.getController()).init(this, null);
+		
+		Stage stage = new Stage();
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+
+	}
+	
 	public Set<User> getUsers(){
 		return users;
+	}
+	
+	public ClientChat getClientChat(){
+		return this.client;
 	}
 	
 }

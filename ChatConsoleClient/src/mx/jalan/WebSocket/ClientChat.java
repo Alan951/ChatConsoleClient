@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -23,9 +27,11 @@ import javax.websocket.WebSocketContainer;
 import com.google.gson.Gson;
 
 import mx.jalan.Controller.ConsoleController;
+import mx.jalan.Model.EncryptionAlgorithm;
 import mx.jalan.Model.Message;
 import mx.jalan.Model.MessageHelper;
 import mx.jalan.Model.User;
+import mx.jalan.Security.EncryptionAlgorithms;
 import mx.jalan.Security.Algorithms.CipherBase;
 
 @ClientEndpoint
@@ -37,6 +43,8 @@ public class ClientChat {
 	private String usersString;
 	private WebSocketContainer container;
 	
+	private List<EncryptionAlgorithm> encryptionSupport;
+	
 	private CipherBase cipher;
 	
 	public ClientChat(URI url, User usuario)throws Exception{
@@ -44,6 +52,15 @@ public class ClientChat {
 		container.connectToServer(this, url);
 		
 		this.usuario = usuario;
+		
+		//Init encryptionSupport
+		this.encryptionSupport = new ArrayList<EncryptionAlgorithm>();
+		Map<String, String> syncProp = new HashMap<String, String>();
+        syncProp.put("key", "");
+        
+        this.encryptionSupport.add(new EncryptionAlgorithm(EncryptionAlgorithms.CAESAR, 
+                EncryptionAlgorithms.SYNC_CIPHER, 
+                syncProp));
 	}
 	
 	@OnOpen
@@ -80,7 +97,7 @@ public class ClientChat {
 				}
 				
 				break;
-			case MessageHelper.RES_CHANGES:
+			case MessageHelper.REQ_CHANGES:
 				System.out.println("RES_CHANGES invoked!");
 				
 				break;
@@ -136,5 +153,9 @@ public class ClientChat {
 	
 	public User getUser(){
 		return usuario;
+	}
+	
+	public List<EncryptionAlgorithm> getEncryptionSupport(){
+		return this.encryptionSupport;
 	}
 }
