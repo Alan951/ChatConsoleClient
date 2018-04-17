@@ -20,10 +20,6 @@ public class CipherMngController {
 	public void initialize(){
 		System.out.println("Initialize called");
 		this.toggleGroup = new ToggleGroup();
-		
-		//this.lblCiradoActual.setText(cifradoActual != null ? "Cifrado actual: " + cifradoActual : "No se ha aplicado un cifrado.");
-		
-		/**/
 	}
 	
 	public CipherMngController(){}
@@ -52,6 +48,8 @@ public class CipherMngController {
 			return;
 
 		System.out.println(this.toggleGroup.getSelectedToggle().getUserData());
+		
+		
 		
 	}
 	

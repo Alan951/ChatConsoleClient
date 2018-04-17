@@ -17,7 +17,7 @@
           <TextFlow fx:id="consoleArea" prefHeight="268.0" prefWidth="525.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
         </content>
       </ScrollPane>
-      <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="600.0">
+      <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
         <menus>
           <Menu mnemonicParsing="false" text="Archivo">
             <items>
@@ -35,6 +35,6 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ListView layoutX="470.0" layoutY="36.0" prefHeight="319.0" prefWidth="123.0" />
+      <ListView layoutX="470.0" layoutY="36.0" prefHeight="319.0" prefWidth="123.0" AnchorPane.bottomAnchor="45.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="36.0" />
    </children>
 </AnchorPane>

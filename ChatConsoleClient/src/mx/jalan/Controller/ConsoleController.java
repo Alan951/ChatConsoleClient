@@ -36,7 +36,7 @@ public class ConsoleController {
 	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://192.168.0.3"
+	private static final String URL = "ws://192.168.0.13"
 			+ ":8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
