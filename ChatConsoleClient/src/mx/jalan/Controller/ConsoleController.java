@@ -36,7 +36,7 @@ public class ConsoleController {
 	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://192.168.147.103"
+	private static final String URL = "ws://192.168.0.3"
 			+ ":8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
@@ -57,6 +57,7 @@ public class ConsoleController {
 		this.stage = stage;
 		
 		stage.setTitle(CHAT_TITLE);
+		onConnect("Jorge"+Math.random());
 	}
 	
 	public ConsoleController(){}
@@ -100,8 +101,8 @@ public class ConsoleController {
 			String []data = command.split(" ");
 			String usr = data[1];
 			
-			
-			if(client == null || client.getSession() == null || !client.getSession().isOpen()){
+			onConnect(usr);
+			/*if(client == null || client.getSession() == null || !client.getSession().isOpen()){
 				try{
 					client = new ClientChat(new URI(URL), new User(usr));
 					client.setConsole(this);
@@ -133,7 +134,7 @@ public class ConsoleController {
 				errorCommand.setStyle("-fx-font-weight: bold;");
 				
 				consoleArea.getChildren().add(errorCommand);
-			}
+			}*/
 			
 		}else if(command.equalsIgnoreCase("/disconnect") || command.equalsIgnoreCase("/dis")){
 			if(client == null || client.getSession() == null){
@@ -232,6 +233,43 @@ public class ConsoleController {
 		return help;
 	}
 	
+	private void onConnect(String usrName){
+		if(client == null || client.getSession() == null || !client.getSession().isOpen()){
+			try{
+				client = new ClientChat(new URI(URL), new User(usrName));
+				client.setConsole(this);
+				Text ok = new Text("[Ha sido conectado al WS]\n");
+				
+				ok.setStyle("-fx-font-weight: bold; "
+						+ "-fx-fill: rgb(81, 48, 45);");
+				consoleArea.getChildren().add(ok);
+				
+				//client.sendMessage(client.createNewUsr());
+				client.sendMessage(MessageConstructor.registerNewUser());
+				stage.setTitle(CHAT_TITLE+" | "+client.getUser().getNombre());
+				
+			}catch(ConnectException ce){
+				Text error = new Text("[Error al conectar WS]: "+ce);
+				error.setStyle("-fx-font-weight: bold; "); 
+				
+				consoleArea.getChildren().add(error);
+				ce.printStackTrace();
+			}catch(Exception e){
+				Text error = new Text("[Error al conectar WS]: "+e);
+				error.setStyle("-fx-font-weight: bold; ");
+				
+				consoleArea.getChildren().add(error);
+				e.printStackTrace();
+			}
+		}else{
+			Text errorCommand = new Text("[Actualmente esta conectado a: \""+client.getSession().getRequestURI().toString()+"\"]\n");
+			errorCommand.setStyle("-fx-font-weight: bold;");
+			
+			consoleArea.getChildren().add(errorCommand);
+		}
+		
+	}
+	
 	@FXML
 	public void onOpenCipherMng(){
 		System.out.println("onOpenCipherMng");
@@ -248,10 +286,12 @@ public class ConsoleController {
 		}
 		
 		Scene scene = new Scene(anchor);
+		scene.getStylesheets().add(this.getClass().getResource("/CipherMngStyle.css").toExternalForm());
 
 		((CipherMngController)loader.getController()).init(this, null);
 		
 		Stage stage = new Stage();
+		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();

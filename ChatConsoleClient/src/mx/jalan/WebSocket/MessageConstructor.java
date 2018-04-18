@@ -1,5 +1,8 @@
 package mx.jalan.WebSocket;
 
+import com.google.gson.Gson;
+
+import mx.jalan.Model.EncryptionAlgorithm;
 import mx.jalan.Model.Message;
 import mx.jalan.Model.MessageHelper;
 import mx.jalan.Model.User;
@@ -29,8 +32,8 @@ public class MessageConstructor {
 		return new Message().setAction(MessageHelper.NEW_USER_MESSAGE);
 	}
 	
-	public static Message enableEncryption(){
-		return new Message().setAction(MessageHelper.REQ_ENABLE_ENCRYPTION);
+	public static Message enableEncryption(EncryptionAlgorithm encryption){
+		return new Message().setAction(MessageHelper.REQ_ENABLE_ENCRYPTION).setMessage(new Gson().toJson(encryption));
 	}
 	
 	public static Message disableEncryption(){

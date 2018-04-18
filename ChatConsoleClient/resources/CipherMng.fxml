@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -11,11 +10,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.jalan.Controller.CipherMngController">
+<AnchorPane xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.jalan.Controller.CipherMngController">
    <children>
-      <Pane prefHeight="200.0" prefWidth="506.0">
+      <Pane prefHeight="200.0" prefWidth="350.0">
          <children>
-            <HBox fx:id="cipherButtonsContainer" alignment="TOP_CENTER" layoutY="57.0" prefHeight="20.0" prefWidth="506.0" spacing="10.0">
+            <HBox fx:id="cipherButtonsContainer" alignment="TOP_CENTER" layoutY="57.0" prefHeight="25.0" prefWidth="350.0" spacing="10.0">
                <children>
                     <ToggleButton onAction="#onSelectEncryption" text="CAESAR" />
                     <ToggleButton onAction="#onSelectEncryption" selected="true" text="DES" />
@@ -23,9 +22,8 @@
                   <ToggleButton mnemonicParsing="false" onAction="#onSelectEncryption" text="AES" />
                </children>
             </HBox>
-            <Label fx:id="lblCifradoActual" layoutX="14.0" layoutY="40.0" prefHeight="17.0" prefWidth="248.0" text="Cifrado actual: " />
-            <Button layoutX="154.0" layoutY="166.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="198.0" text="Aplicar" />
-            <GridPane fx:id="gridPaneEncProps" alignment="BOTTOM_LEFT" hgap="10.0" layoutX="153.0" layoutY="89.0" prefHeight="69.0" prefWidth="200.0">
+            <Label fx:id="lblCifAct" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="248.0" text="Cifrado actual: " />
+            <GridPane fx:id="gridPaneEncProps" alignment="BOTTOM_LEFT" hgap="10.0" layoutX="75.0" layoutY="92.0" prefHeight="69.0" prefWidth="200.0">
               <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -34,11 +32,14 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
-               <children>
-                  <Label alignment="CENTER_RIGHT" text="Hola" GridPane.halignment="RIGHT" />
-                  <TextField GridPane.columnIndex="1" />
-               </children>
             </GridPane>
+            <HBox layoutX="38.0" layoutY="161.0" prefHeight="25.0" prefWidth="275.0" spacing="5.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onSolicitar" prefHeight="25.0" prefWidth="88.0" text="Solicitar" />
+                  <Button mnemonicParsing="false" onAction="#onAplicar" prefHeight="25.0" prefWidth="88.0" text="Aplicar" />
+                  <Button mnemonicParsing="false" onAction="#onDeshabilitar" prefHeight="25.0" prefWidth="88.0" text="Deshabilitar" />
+               </children>
+            </HBox>
          </children>
       </Pane>
    </children>

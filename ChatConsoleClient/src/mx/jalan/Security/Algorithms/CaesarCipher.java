@@ -1,6 +1,7 @@
 package mx.jalan.Security.Algorithms;
 
 import java.io.Serializable;
+import java.util.Base64;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -8,7 +9,7 @@ public class CaesarCipher<T, KT extends Serializable> implements CipherBase<T, K
 
 	private KT key;
 
-    private static final String LETTERS = "ABCDEFGHIJQLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz1234567890!#$%&()=?¡+-";
+    private static final String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
     public CaesarCipher(KT key) {
     	
@@ -68,10 +69,13 @@ public class CaesarCipher<T, KT extends Serializable> implements CipherBase<T, K
 
     @Override
     public String encode(T textToCipher) {
-        char text[] = textToCipher.toString().toCharArray();
+        String textString = textToCipher.toString();
+        String textString64 = new String(Base64.getEncoder().encode(textString.getBytes()));
+        char text[] = textString64.toCharArray();
 
         for (int x = 0; x < text.length; x++) { //Recorrer cada letra del texto
             char n = text[x];
+            System.out.println("Err in: "+n);
             int pos = getPosLetterInLetters(searchChar(n));
 
             if ((pos + getNumberKey(key)) >= LETTERS.length()) {
@@ -91,7 +95,7 @@ public class CaesarCipher<T, KT extends Serializable> implements CipherBase<T, K
 
             text[x] = n;
         }
-
+        
         return new String(text);
     }
 
@@ -123,13 +127,15 @@ public class CaesarCipher<T, KT extends Serializable> implements CipherBase<T, K
 
             text[x] = n;
         }
+        
+        return new String(Base64.getDecoder().decode(new String(text)));
 
-        return new String(text);
+        //return new String(text);
     }
     
     @Override
     public boolean isAsyncCipher(){
-        return true;
+        return false;
     }
 
     @Override
