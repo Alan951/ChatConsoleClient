@@ -14,5 +14,17 @@ public interface CipherBase<T, KT extends Serializable> {
     public void setKey(KT key);
 
     public KT getKey();
+    
+    public void setPrivateKey(KT key);
+    
+    public KT getPrivateKey();
+    
+    public void setPublicKey(KT key);
+    
+    public KT getPublicKey();
+    
+    public void setDebugMode(boolean debug);
+    
+    public boolean idDebugMode();
 }
 

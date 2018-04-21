@@ -92,6 +92,7 @@ public class ClientChat {
 	@OnMessage
 	public void onMessage(String msg){
 		Message message;
+		boolean isEncrypted = false;
 		
 		if(JsonUtils.isJsonObject(msg)){ //msg es un json
 			message = new Gson().fromJson(msg, Message.class);
@@ -102,13 +103,14 @@ public class ClientChat {
 			
 			if(JsonUtils.isJsonObject(msgDecoded)){
 				message = new Gson().fromJson(msgDecoded, Message.class);
-			}else{
+				isEncrypted = true;
+			}else{ //No es un mensaje
 				return;
 			}
 		}
 		
 		
-		System.out.println("[DG - OnMessage]: "+message);
+		System.out.println("[DG - OnMessage"+ (isEncrypted ? " Decrypted" : "") +"]: "+message);
 		
 		if(message != null)
 			Platform.runLater(() -> this.messageListeners.forEach(msgListener -> msgListener.onMessage(message)));
@@ -145,20 +147,14 @@ public class ClientChat {
 		String message = null;
 		
 		if(this.cipher != null){
-			String messageBase64 = null;
-			String messageEncrypted = null;
-			String messageEncryptedBase64 = null;
-			
-			messageBase64 = new String(Base64.getEncoder().encode(jsonMessage.getBytes()));
-			messageEncrypted = this.getCipher().encode(messageBase64);
-            messageEncryptedBase64 = new String(Base64.getEncoder().encode(messageEncrypted.getBytes()));
-            message = messageEncryptedBase64;
+			message = this.cipher.encode(jsonMessage);
 		}else{
 			message = jsonMessage;
 		}
 		
 		try{
 			System.out.println("[DG - SendMessage]: "+msg.toString());
+			if(this.cipher != null)	System.out.println("[DG - SendMessage Encrypted]: " + message);
 			this.session.getBasicRemote().sendText(message);
 		}catch(IOException e){
 			e.printStackTrace();

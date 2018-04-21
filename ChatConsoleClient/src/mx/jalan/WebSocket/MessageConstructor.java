@@ -33,7 +33,7 @@ public class MessageConstructor {
 	}
 	
 	public static Message enableEncryption(EncryptionAlgorithm encryption){
-		return new Message().setAction(MessageHelper.REQ_ENABLE_ENCRYPTION).setMessage(new Gson().toJson(encryption));
+		return new Message().setAction(MessageHelper.REQ_ENABLE_ENCRYPTION).setMessage(new Gson().toJson(encryption, EncryptionAlgorithm.class));
 	}
 	
 	public static Message disableEncryption(){
