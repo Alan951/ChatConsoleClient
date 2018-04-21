@@ -17,15 +17,15 @@ public class CipherTests {
 		cipher = factory.getCipher(EncryptionAlgorithms.CAESAR);
 		cipher.setKey(1L);
 		
-		String text = "ABCDEFGHIJQLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz1234567890!#$%&()=?¡+---AABB";
+		String text = "YlpuTWNvSzBXb3pMY28vNVZHUE1jSG0xV3BEa09sVHJWNG5NZklPMGE0bk9TMnIyWW5qUWdublpiSXpMY28vclluZkhjV3pGVWxIbE9uYjdYVks3T1lQdlZvekxjcEM1VVkyM2ZvTFpVcG5jVzJtNFVZdnlmb1B2Ykl6UFMxVDhWWnJMT0cvR1lablBUR1g1VldUSFBHNzhYVkhRUzJxN1ZHUE1PSUhaT1l6bE8zTHFhbmpEY1cvd2U0bmNUMmF5WW5QTFBvWDdVbFhjWDJiN1VZcnhnVzNHVFZUT1MycjJhbEszT0lIRlVWYlFTNWZyWW1mSVBXbnNkNW5QVUZEMVVZN1VlSUxaWFluUmRwUHJhV2U3T1lQclVWYlBjbVgxVVkyemVJTHdYbERjVzJtNFZuVFhlMm53Vm96Yk9sbjNZbVBMUG0zOFhaUExkVlhxYW8yNmNXL3NjNXJQZ21INVZXVERmMjNLT1Zub1dWMi8=";
 		String textCipher;
 		String textDecrypter;
 		
-		textCipher = cipher.encode(text);
-		textDecrypter = cipher.decode(textCipher);
+		//textCipher = cipher.encode(text);
+		textDecrypter = cipher.decode(text);
 		
 		System.out.println("Texto  : "+ text);
-		System.out.println("Cifrado: "+ textCipher);
+		//System.out.println("Cifrado: "+ textCipher);
 		System.out.println("Descifr: "+ textDecrypter);
 		
 		//System.out.println(cipher.encode("ABCDEFGHIJQLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz1234567890!#$%&()=?¡+-"));
