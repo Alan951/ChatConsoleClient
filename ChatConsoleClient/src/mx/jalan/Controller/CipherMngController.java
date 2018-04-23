@@ -9,6 +9,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import com.google.gson.Gson;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
@@ -19,6 +20,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import mx.jalan.Model.EncryptionAlgorithm;
 import mx.jalan.Model.Message;
 import mx.jalan.Model.MessageHelper;
@@ -35,18 +37,19 @@ public class CipherMngController {
 	
 	private ConsoleController cc;
 	
+	private Stage stage;
+	
 	@FXML
 	public void initialize(){
-		System.out.println("Initialize called");
 		this.toggleGroup = new ToggleGroup();
 		this.gridPaneEncProps.setHgap(10);
 	}
 	
 	public CipherMngController(){}
 	
-	public void init(ConsoleController cc, String cifradoActual){
-		System.out.println("init called");
+	public void init(Stage stage, ConsoleController cc, String cifradoActual){
 		this.cc = cc;
+		this.stage = stage;
 		
 		this.cipherButtonsContainer.getChildren().forEach((item) -> {
 			ToggleButton btn = (ToggleButton)item;
@@ -60,7 +63,8 @@ public class CipherMngController {
 			} 
 		});
 		
-		this.cc.getClientChat().addListener((msg) -> {
+		MessageListener onEnableEncryptionListener;
+		onEnableEncryptionListener = this.cc.getClientChat().addListener((msg) -> {
 			if(msg.getAction().equals(MessageHelper.ENABLE_ENCRYPTION)){
 				
 				this.lblCifAct.setText("Cifrado actual: " + msg.getMessage() + ".");
@@ -71,6 +75,13 @@ public class CipherMngController {
 				this.lblCifAct.setText("Sin cifrado.");
 			}
 		});
+		
+		stage.setOnCloseRequest((event) -> {
+			System.out.println("[*] onCloseRequest invoked");
+			this.cc.getClientChat().removeListener(onEnableEncryptionListener);
+		});
+		
+		
 	}
 	
 	@FXML

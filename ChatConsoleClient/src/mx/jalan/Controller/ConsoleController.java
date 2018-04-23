@@ -17,11 +17,14 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.jalan.Model.Message;
+import mx.jalan.Model.MessageHelper;
 import mx.jalan.Model.TextMessage;
 import mx.jalan.Model.User;
 import mx.jalan.WebSocket.ClientChat;
 import mx.jalan.WebSocket.MessageConstructor;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ScrollPane;
 
 
@@ -34,9 +37,11 @@ public class ConsoleController {
 	
 	private ClientChat client;
 	
+	private boolean listenEnableEncryption;
+	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://localhost"
+	private static final String URL = "ws://192.168.0.3"
 			+ ":8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
@@ -51,6 +56,7 @@ public class ConsoleController {
 		}
 		
 		consoleArea.getChildren().clear();
+		
 	}
 	
 	public void init(Stage stage){
@@ -58,6 +64,7 @@ public class ConsoleController {
 		
 		stage.setTitle(CHAT_TITLE);
 		onConnect("Jorge"+Math.random());
+		this.initListeners();
 	}
 	
 	public ConsoleController(){}
@@ -272,7 +279,10 @@ public class ConsoleController {
 	
 	@FXML
 	public void onOpenCipherMng(){
-		System.out.println("onOpenCipherMng");
+		System.out.println("[*] onOpenCipherMng");
+		
+		
+		this.listenEnableEncryption = false;
 		
 		FXMLLoader loader = new FXMLLoader();
 		AnchorPane anchor = null;
@@ -287,15 +297,39 @@ public class ConsoleController {
 		
 		Scene scene = new Scene(anchor);
 		scene.getStylesheets().add(this.getClass().getResource("/CipherMngStyle.css").toExternalForm());
-
-		((CipherMngController)loader.getController()).init(this, null);
 		
 		Stage stage = new Stage();
+
+		((CipherMngController)loader.getController()).init(stage, this, null);
+		
+		
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();
+		
+		this.listenEnableEncryption = true;
 
+	}
+	
+	public void initListeners(){
+		this.listenEnableEncryption = true;
+		
+		this.client.addListener((message) -> {
+			if(message.getAction().equals(MessageHelper.ENABLE_ENCRYPTION) && listenEnableEncryption){
+				listenEnableEncryption = false;
+				
+				this.appendMessageText(-1, "[INFO] El servidor utiliza un algoritmo de cifrado. Ve a la gestión de cifrado y activalo o no podras ver los mensajes.");
+				
+				Alert alerta = new Alert(AlertType.INFORMATION);
+				alerta.setTitle("Notificación de cifrado.");
+				alerta.setHeaderText(null);
+				alerta.setContentText("Se ha habilitado en el servidor un metodo de cifrado.\nConfigura el metodo de cifrado y sus llaves para poder ver y enviar mensajes.");
+				alerta.showAndWait();
+				
+				onOpenCipherMng();
+			}
+		});
 	}
 	
 	public Set<User> getUsers(){

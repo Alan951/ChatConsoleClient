@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -109,11 +110,21 @@ public class ClientChat {
 			}
 		}
 		
-		
 		System.out.println("[DG - OnMessage"+ (isEncrypted ? " Decrypted" : "") +"]: "+message);
 		
-		if(message != null)
-			Platform.runLater(() -> this.messageListeners.forEach(msgListener -> msgListener.onMessage(message)));
+		if(message != null){
+			Platform.runLater(() -> {
+				System.out.println("[DG - ClientChat OnMessage]: Dispatch Event from listener for: " + this.messageListeners);
+				
+				Iterator<MessageListener> listeners = this.messageListeners.iterator();
+				while(listeners.hasNext()){
+					MessageListener listener = listeners.next();
+					listener.onMessage(message);
+				}
+				
+				//Platform.runLater(() -> this.messageListeners.forEach(msgListener -> msgListener.onMessage(message)));				
+			});
+		}
 		
 		switch(message.getAction()){
 			case MessageHelper.SIMPLE_MESSAGE:
@@ -127,7 +138,6 @@ public class ClientChat {
 				
 				break;
 			case MessageHelper.REQ_CHANGES:
-				System.out.println("RES_CHANGES invoked!");
 				
 				break;
 			case MessageHelper.ERROR_MESSAGE:
@@ -146,10 +156,10 @@ public class ClientChat {
 		
 		String message = null;
 		
-		if(this.cipher != null){
-			message = this.cipher.encode(jsonMessage);
-		}else{
-			message = jsonMessage;
+		if(this.cipher != null){ //Si hay un cifrado activo
+			message = this.cipher.encode(jsonMessage); //Cifrar el mensaje
+		}else{ //De lo contrario, enviarlo en texto plano.
+			message = jsonMessage; 
 		}
 		
 		try{
@@ -217,7 +227,13 @@ public class ClientChat {
 		return this.encryptionSupport;
 	}
 	
-	public void addListener(MessageListener msgListener){
+	public MessageListener addListener(MessageListener msgListener){
 		this.messageListeners.add(msgListener);
+		
+		return msgListener;
+	}
+	
+	public boolean removeListener(MessageListener msgListener){
+		return this.messageListeners.remove(msgListener);
 	}
 }
