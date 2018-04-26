@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,15 +80,17 @@ public class ClientChat {
 	}
 	
 	@OnClose
-	public void onClose(Session userSession, CloseReason reason) throws IOException{		
-		this.session.close();
+	public void onClose(Session userSession, CloseReason reason) throws IOException{	
+		if(this.session.isOpen())
+			this.session.close();
+		System.out.println(reason);
 		//this.session = null;
 	}
 	
 	@OnError
 	public void onError(Throwable err){
 		System.out.println("Error: "+err.getMessage());
-		System.out.println(err);
+		err.printStackTrace();
 	}
 	
 	@OnMessage
@@ -99,6 +102,11 @@ public class ClientChat {
 			message = new Gson().fromJson(msg, Message.class);
 		}else{ //Probablemente sea un mensaje cifrado.
 			System.out.println("[DG - OnMessage Encrypted?]: "+msg);
+			
+			if(this.cipher == null){ //El mensaje esta cifrado y no hay un metodo criptografico en el cliente activado
+				System.out.println("[Cipher not setted yet]");
+				return;
+			}
 			
 			String msgDecoded = this.cipher.decode(msg);
 			
@@ -121,12 +129,14 @@ public class ClientChat {
 					MessageListener listener = listeners.next();
 					listener.onMessage(message);
 				}
-				
-				//Platform.runLater(() -> this.messageListeners.forEach(msgListener -> msgListener.onMessage(message)));				
+				//this.messageListeners.forEach(msgListener -> msgListener.onMessage(message));
+				//Platform.runLater(() -> );				
 			});
 		}
 		
 		switch(message.getAction()){
+
+		
 			case MessageHelper.SIMPLE_MESSAGE:
 				if(message.getUserSource() == null){ //Message from Server
 					cc.appendMessageText(-1, "[SERVER]: " + message.getMessage());
@@ -136,6 +146,9 @@ public class ClientChat {
 					cc.appendMessageText(-1, "[PM de \""+ message.getUserSource().getNombre() +"\"]: " + message.getMessage());				
 				}
 				
+				break;
+			case MessageHelper.WELCOME_MESSAGE:
+				cc.appendMessageText(-1, "[SERVER]: " + message.getMessage());
 				break;
 			case MessageHelper.REQ_CHANGES:
 				
@@ -235,5 +248,9 @@ public class ClientChat {
 	
 	public boolean removeListener(MessageListener msgListener){
 		return this.messageListeners.remove(msgListener);
+	}
+	
+	public void removeListeners(MessageListener... listeners){
+		this.messageListeners.removeAll(Arrays.asList(listeners));
 	}
 }

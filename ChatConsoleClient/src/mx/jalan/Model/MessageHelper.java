@@ -3,6 +3,7 @@ package mx.jalan.Model;
 public class MessageHelper {
 	public final static String ERROR_MESSAGE    = "error";
     public final static String SIMPLE_MESSAGE   = "msg";
+    public final static String WELCOME_MESSAGE  = "welcome";
     public final static String REQ_CHANGES      = "req_chngs";
     public final static String NEW_USER_MESSAGE = "new_user";
     public final static String USER_LIST        = "user_list";

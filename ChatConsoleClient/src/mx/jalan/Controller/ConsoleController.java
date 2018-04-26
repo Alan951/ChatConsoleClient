@@ -41,8 +41,7 @@ public class ConsoleController {
 	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://192.168.0.3"
-			+ ":8080/ChatWebSocket/chat";
+	private static final String URL = "ws://192.168.0.3:8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
 	private Stage stage;
@@ -50,6 +49,7 @@ public class ConsoleController {
 	@FXML
 	public void initialize(){
 		scrollPane.setFitToWidth(true);
+		
 		
 		for(int x = 0 ; x < 100 ; x++){
 			consoleArea.getChildren().add(new Text("Hola"));
@@ -63,7 +63,7 @@ public class ConsoleController {
 		this.stage = stage;
 		
 		stage.setTitle(CHAT_TITLE);
-		onConnect("Jorge"+Math.random());
+		//onConnect("Jorge"+Math.random());
 		this.initListeners();
 	}
 	
@@ -72,6 +72,8 @@ public class ConsoleController {
 	@FXML
 	private void onEnter(ActionEvent e){
 		String input = txtLine.getText();
+		
+		boolean scrollDown = scrollPane.getVvalue() >= 0.70 || scrollPane.getVvalue() == 0;
 		
 		txtLine.setText("");
 		
@@ -92,6 +94,10 @@ public class ConsoleController {
 			if(client != null)
 				client.sendMessage(MessageConstructor.createMessage(content));
 		}
+		
+		if(scrollDown)
+			scrollPane.setVvalue(1.0);
+		
 	}
 	
 	private void command(String command){
@@ -150,7 +156,7 @@ public class ConsoleController {
 				
 				consoleArea.getChildren().add(errorCommand);
 			}else{
-				Text ok = new Text("[Desconectado del WS]\n");
+				Text ok = new Text("[Desconectado del servidor]\n");
 				
 				ok.setStyle("-fx-font-weight: bold; "
 						+ "-fx-fill: rgb(81, 48, 45);");
@@ -245,21 +251,22 @@ public class ConsoleController {
 			try{
 				client = new ClientChat(new URI(URL), new User(usrName));
 				client.setConsole(this);
-				Text ok = new Text("[Ha sido conectado al WS]\n");
+				//Text ok = new Text("[Ha sido conectado al WS]\n");
 				
-				ok.setStyle("-fx-font-weight: bold; "
-						+ "-fx-fill: rgb(81, 48, 45);");
-				consoleArea.getChildren().add(ok);
+				//ok.setStyle("-fx-font-weight: bold; "
+						//+ "-fx-fill: rgb(81, 48, 45);");
+				//consoleArea.getChildren().add(ok);
+				
+				this.appendMessageText(1, "[Ha sido conectado al servidor]");
 				
 				//client.sendMessage(client.createNewUsr());
 				client.sendMessage(MessageConstructor.registerNewUser());
 				stage.setTitle(CHAT_TITLE+" | "+client.getUser().getNombre());
 				
-			}catch(ConnectException ce){
-				Text error = new Text("[Error al conectar WS]: "+ce);
-				error.setStyle("-fx-font-weight: bold; "); 
+				this.initListeners();
 				
-				consoleArea.getChildren().add(error);
+			}catch(ConnectException ce){
+				this.appendMessageText(1, "[Error al intentarse conectar con el servidor]: Verifica que el equipo alcance al servidor.");
 				ce.printStackTrace();
 			}catch(Exception e){
 				Text error = new Text("[Error al conectar WS]: "+e);
@@ -280,7 +287,6 @@ public class ConsoleController {
 	@FXML
 	public void onOpenCipherMng(){
 		System.out.println("[*] onOpenCipherMng");
-		
 		
 		this.listenEnableEncryption = false;
 		
@@ -312,7 +318,46 @@ public class ConsoleController {
 
 	}
 	
+	@FXML
+	public void onOpenConnect(){
+		System.out.println("[*] onOpenConnect");
+		
+		FXMLLoader loader = new FXMLLoader();
+		AnchorPane anchor = null;
+		
+		loader.setLocation(this.getClass().getResource("/ConnectView.fxml"));
+		
+		try{
+			anchor = (AnchorPane) loader.load();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		Scene scene = new Scene(anchor);
+		scene.getStylesheets().add(this.getClass().getResource("/CipherMngStyle.css").toExternalForm());
+		
+		Stage stage = new Stage();
+
+		ConnectController connController = (ConnectController)loader.getController();
+		connController.init(this, stage);
+		
+		stage.setTitle("Conectar con el servidor.");
+		stage.setResizable(false);
+
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.showAndWait();
+		if(connController.getClientChat() != null){
+			this.client = connController.getClientChat();
+			
+			//Initialize
+		}
+	}
+	
 	public void initListeners(){
+		if(this.client == null)
+			return;
+		
 		this.listenEnableEncryption = true;
 		
 		this.client.addListener((message) -> {
