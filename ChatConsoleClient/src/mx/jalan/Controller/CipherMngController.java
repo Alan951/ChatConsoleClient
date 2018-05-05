@@ -8,16 +8,19 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.gson.Gson;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -51,6 +54,8 @@ public class CipherMngController {
 		this.cc = cc;
 		this.stage = stage;
 		
+		this.lblCifAct.setText((cifradoActual != null) ? "Cifrado actual: " + cifradoActual : "Sin cifrado actual" );
+		
 		this.cipherButtonsContainer.getChildren().forEach((item) -> {
 			ToggleButton btn = (ToggleButton)item;
 			btn.setToggleGroup(this.toggleGroup);
@@ -76,9 +81,25 @@ public class CipherMngController {
 			}
 		});
 		
-		stage.setOnCloseRequest((event) -> {
+		MessageListener onDisableEncryptionListener;
+		onDisableEncryptionListener = this.cc.getClientChat().addListener((msg) -> {
+			if(msg.getAction().equals(MessageHelper.DISABLE_ENCRYPTION)){
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Cifrado deshabilitado");
+				alert.setHeaderText(null);
+				alert.setContentText("El cifrado se ha deshabilitado.");
+				alert.showAndWait();
+			}
+		});
+		
+		/*stage.setOnCloseRequest((event) -> {
 			System.out.println("[*] onCloseRequest invoked");
 			this.cc.getClientChat().removeListener(onEnableEncryptionListener);
+		});*/
+		
+		stage.setOnHiding((event) -> {
+			System.out.println("[*] onHiding invoked");
+			this.cc.getClientChat().removeListener(onEnableEncryptionListener, onDisableEncryptionListener);
 		});
 		
 		
@@ -126,6 +147,7 @@ public class CipherMngController {
 	@FXML
 	private void onDeshabilitar(){
 		
+		this.cc.getClientChat().sendMessage(MessageConstructor.disableEncryption());
 	}
 	
 	@FXML

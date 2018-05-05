@@ -124,19 +124,13 @@ public class ClientChat {
 			Platform.runLater(() -> {
 				System.out.println("[DG - ClientChat OnMessage]: Dispatch Event from listener for: " + this.messageListeners);
 				
-				Iterator<MessageListener> listeners = this.messageListeners.iterator();
-				while(listeners.hasNext()){
-					MessageListener listener = listeners.next();
-					listener.onMessage(message);
-				}
-				//this.messageListeners.forEach(msgListener -> msgListener.onMessage(message));
-				//Platform.runLater(() -> );				
+				ArrayList<MessageListener> listeners = new ArrayList<>(this.messageListeners);
+				
+				listeners.forEach(msgListener -> msgListener.onMessage(message));				
 			});
 		}
 		
 		switch(message.getAction()){
-
-		
 			case MessageHelper.SIMPLE_MESSAGE:
 				if(message.getUserSource() == null){ //Message from Server
 					cc.appendMessageText(-1, "[SERVER]: " + message.getMessage());
@@ -157,6 +151,10 @@ public class ClientChat {
 				cc.appendMessageText(1,  
 						"[SERVER] Error \""+message.getCode()+"\": " + 
 								message.getMessage());
+				break;
+			case MessageHelper.DISABLE_ENCRYPTION:
+				cc.appendMessageText(1, "[SERVER] Se ha deshabilitado el metodo de cifrado.");
+				this.setCipher(null);
 				break;
 		}
 	}
@@ -247,10 +245,11 @@ public class ClientChat {
 	}
 	
 	public boolean removeListener(MessageListener msgListener){
+		
 		return this.messageListeners.remove(msgListener);
 	}
 	
-	public void removeListeners(MessageListener... listeners){
+	public void removeListener(MessageListener... listeners){
 		this.messageListeners.removeAll(Arrays.asList(listeners));
 	}
 }

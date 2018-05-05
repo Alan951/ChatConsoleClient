@@ -3,6 +3,7 @@ package mx.jalan.Controller;
 import java.net.ConnectException;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -11,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
@@ -25,6 +25,8 @@ import mx.jalan.WebSocket.MessageConstructor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 
 
@@ -35,13 +37,19 @@ public class ConsoleController {
 	
 	@FXML ScrollPane scrollPane;
 	
+	@FXML MenuItem mConectar;
+	@FXML MenuItem mDesconectar;
+	@FXML MenuItem mGstcifr;
+	@FXML MenuItem mSalir;
+	@FXML Menu	   menuArchivo;
+	
 	private ClientChat client;
 	
 	private boolean listenEnableEncryption;
 	
 	private Set<User> users = new HashSet<User>();
 	
-	private static final String URL = "ws://192.168.0.3:8080/ChatWebSocket/chat";
+	private final String URL = "ws://192.168.0.3:8080/ChatWebSocket/chat";
 	
 	private final static String CHAT_TITLE = "Console Chat with WebSocket";
 	private Stage stage;
@@ -113,8 +121,23 @@ public class ConsoleController {
 		}else if(command.startsWith("/connect".toLowerCase()) || command.startsWith("/conn".toLowerCase())){
 			String []data = command.split(" ");
 			String usr = data[1];
+			String url = null;
+			if(data.length == 3){
+				url = data[2];
+				String port = "8080";
+				
+				if(!url.contains(":")){
+					url = url+":"+port;
+				}
+				
+				url = "ws://"+ url +"/ChatWebSocket/chat";
+			}
 			
-			onConnect(usr);
+			try{
+				System.out.println(url);
+				onConnect(usr, url);
+			}catch(ConnectException e){}
+			
 			/*if(client == null || client.getSession() == null || !client.getSession().isOpen()){
 				try{
 					client = new ClientChat(new URI(URL), new User(usr));
@@ -150,21 +173,7 @@ public class ConsoleController {
 			}*/
 			
 		}else if(command.equalsIgnoreCase("/disconnect") || command.equalsIgnoreCase("/dis")){
-			if(client == null || client.getSession() == null){
-				Text errorCommand = new Text("[Actualmente no esta conectado a ningun WS]\n");
-				errorCommand.setStyle("-fx-font-weight: bold;");
-				
-				consoleArea.getChildren().add(errorCommand);
-			}else{
-				Text ok = new Text("[Desconectado del servidor]\n");
-				
-				ok.setStyle("-fx-font-weight: bold; "
-						+ "-fx-fill: rgb(81, 48, 45);");
-				
-				consoleArea.getChildren().add(ok);
-				client.disconnect();
-				stage.setTitle(CHAT_TITLE);
-			}
+			onDisconnect();
 		}else if(command.startsWith("/pm".toLowerCase())){			
 			String []data = command.split(" ");
 			String usr = data[1];
@@ -235,39 +244,45 @@ public class ConsoleController {
 		String help = "";
 		help = "IMPORTANTE: Solo es posible ingresar un comando a la vez y estos van seguidos de una diagonal. Ej: \"/conn Jorge\"\n"
 				+ "\t[Comando] - [Descripción]\n"
-				+ "\t/conn <nombre usuario> ó /connect <nombre usuario> - Sirve para conectarse al websocket. Es necesario especificar el nombre de usuario.\n"
+				+ "\t/conn <nombre usuario> <ip:port> ó /connect <nombre usuario> <ip:port> - Sirve para conectarse al websocket. Es necesario especificar el nombre de usuario.\n"
 				+ "\t/online - Ver todos los usuarios conectados en el chat.\n"
 				+ "\t/dis ó /disconnect - Sirve para desconectarse del websocket.\n"
 				+ "\t/clear - Limpia la terminal.\n"
 				+ "\t/pm <nombre usuario> - Envia un mensaje privado a un usuario en especifico.\n"
-				+ "\t/help - Ver lista de todos los comandos.\n"
+				+ "\t/help - Ver esto.\n"
 				+ "\t/exit - Salir del programa.\n";
 		
 		return help;
 	}
 	
-	private void onConnect(String usrName){
+	public ClientChat onConnect(String usrName, String url)throws ConnectException{
+		if(url == null)
+			url = this.URL;
+		
+		
 		if(client == null || client.getSession() == null || !client.getSession().isOpen()){
 			try{
-				client = new ClientChat(new URI(URL), new User(usrName));
+				client = new ClientChat(new URI(url), new User(usrName));
 				client.setConsole(this);
-				//Text ok = new Text("[Ha sido conectado al WS]\n");
-				
-				//ok.setStyle("-fx-font-weight: bold; "
-						//+ "-fx-fill: rgb(81, 48, 45);");
-				//consoleArea.getChildren().add(ok);
 				
 				this.appendMessageText(1, "[Ha sido conectado al servidor]");
 				
-				//client.sendMessage(client.createNewUsr());
 				client.sendMessage(MessageConstructor.registerNewUser());
 				stage.setTitle(CHAT_TITLE+" | "+client.getUser().getNombre());
 				
 				this.initListeners();
 				
+				mngMenuItem("conectar", false); //Desactivar menu item "Conectar"
+				mngMenuItem("desconectar", true); //Activar menu item "Desconectar"
+				mngMenuItem("gestión cifrado", true); //Activar menu item "Desconectar"
+				
+				return client;
+				
 			}catch(ConnectException ce){
 				this.appendMessageText(1, "[Error al intentarse conectar con el servidor]: Verifica que el equipo alcance al servidor.");
-				ce.printStackTrace();
+				//ce.printStackTrace();
+				
+				throw ce;
 			}catch(Exception e){
 				Text error = new Text("[Error al conectar WS]: "+e);
 				error.setStyle("-fx-font-weight: bold; ");
@@ -282,12 +297,54 @@ public class ConsoleController {
 			consoleArea.getChildren().add(errorCommand);
 		}
 		
+		return null;
+		
+	}
+	
+	@FXML
+	public void onDisconnect(){
+		if(client == null || client.getSession() == null){
+			Text errorCommand = new Text("[Actualmente no esta conectado a ningun WS]\n");
+			errorCommand.setStyle("-fx-font-weight: bold;");
+			
+			consoleArea.getChildren().add(errorCommand);
+		}else{
+			Text ok = new Text("[Desconectado del servidor]\n");
+			
+			ok.setStyle("-fx-font-weight: bold; "
+					+ "-fx-fill: rgb(81, 48, 45);");
+			
+			consoleArea.getChildren().add(ok);
+			client.disconnect();
+			this.client = null;
+			stage.setTitle(CHAT_TITLE);
+			
+			mngMenuItem("conectar", true); //Conectar menu item "Conectar"
+			mngMenuItem("desconectar", false); //Desactivar menu item "Desconectar"
+			mngMenuItem("gestión cifrado", false);
+		}
+	}
+	
+	public boolean mngMenuItem(String menuItemName, boolean enable){
+		Optional<MenuItem> m = menuArchivo.getItems().filtered((item) -> item.getText().equalsIgnoreCase(menuItemName)).stream().findFirst();
+		
+		if(m.isPresent()){
+			m.get().setDisable(!enable);
+			
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	@FXML
 	public void onOpenCipherMng(){
 		System.out.println("[*] onOpenCipherMng");
 		
+		openCipherMng(null);
+	}
+	
+	public void openCipherMng(String cipherName){
 		this.listenEnableEncryption = false;
 		
 		FXMLLoader loader = new FXMLLoader();
@@ -306,16 +363,15 @@ public class ConsoleController {
 		
 		Stage stage = new Stage();
 
-		((CipherMngController)loader.getController()).init(stage, this, null);
+		((CipherMngController)loader.getController()).init(stage, this, cipherName);
 		
-		
+		stage.setTitle("Gestión Cifrado");
 		stage.setResizable(false);
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.setScene(scene);
 		stage.showAndWait();
 		
 		this.listenEnableEncryption = true;
-
 	}
 	
 	@FXML
@@ -372,7 +428,7 @@ public class ConsoleController {
 				alerta.setContentText("Se ha habilitado en el servidor un metodo de cifrado.\nConfigura el metodo de cifrado y sus llaves para poder ver y enviar mensajes.");
 				alerta.showAndWait();
 				
-				onOpenCipherMng();
+				openCipherMng(message.getMessage());
 			}
 		});
 	}

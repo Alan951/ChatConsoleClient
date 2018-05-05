@@ -1,6 +1,21 @@
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
+import javax.crypto.Cipher;
 
 import org.junit.Test;
 
@@ -13,26 +28,52 @@ public class CipherTests {
 
 	@Test
 	public void test() {
-		CipherBase<String, Long> cipher;
-		CipherFactory<String, Long> factory = new CipherFactory<>();
-		Charset defaultCharset = Charset.defaultCharset();
-		System.out.println(defaultCharset);
-		cipher = factory.getCipher(EncryptionAlgorithms.CAESAR);
-		cipher.setKey(1L);
+		PrivateKey privateKey;
+		//String privateKeyString = "AJOnAeTfeU4K+do5QdBM2BQUhfrRI2rYf/Gk4";
+		PublicKey publicKey;
+		//String publicKeyString = "HolaHolaHolaHolaHolaHolaHola";
 		
-		String text = "Hola mi nombre es jorge";
-		String textCipher;
-		String textDecrypter;
+		String textToCipher = "{\"code\":0,\"action\":\"msg\",\"message\":\"Â¿como andamos?\",\"userSource\":{\"nombre\":\"Jorge\"},\"timestamp\":{\"date\":{\"year\":2018,\"month\":5,\"day\":4},\"time\":{\"hour\":19,\"minute\":20,\"second\":7,\"nano\":913000000}}}{\"code\":0,\"action\":\"msg\",\"message\":\"Â¿como andamos?\",\"userSource\":{\"nombre\":\"Jorge\"},\"timestamp\":{\"date\":{\"year\":2018,\"month\":5,\"day\":4},\"time\":{\"hour\":19,\"minute\":20,\"second\":7,\"nano\":913000000}}}";
+		String textEncrypted = null;
+		String textDecrypted = null;
 		
-		textCipher = cipher.encode(text);
-		textDecrypter = cipher.decode(textCipher);
+		KeyFactory keyFactory;
 		
-		System.out.println("Texto  : "+ text);
-		System.out.println("Cifrado: "+ textCipher);
-		System.out.println("Descifr: "+ textDecrypter);
-		
-		//System.out.println(cipher.encode("ABCDEFGHIJQLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz1234567890!#$%&()=?¡+-"));
-		//System.out.println(cipher.decode("fzQkc3SmJkpxMDQiZ4Sqc35jPjQud3djMDQuaYÑ1ZXemJkpjbH0tZTFjMDQ2d3WzV302dnÑmJkq8Jn6wcXQzaTJ7JlqwdnemJñ!tJñSqcXW1eHGudDJ7fzQlZYSmJkq8JñmmZYJjPkJxNUhtJn2wcñSpJkp!MDQlZYljPki0MDQ!bX2mJkq8JniweYJjPkF4MDQubX62eHVjPkN5MDQ1aXÑwcnLjPkL1MDQvZX6wJkp4PElxNEBxNEC0gY!?"));
+		try{
+			keyFactory = KeyFactory.getInstance("RSA");
+			
+			byte privateKeyData[] = Files.readAllBytes(Paths.get("C:\\Users\\Ck\\Desktop\\keys\\private_key.der"));
+			
+			PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyData);
+			
+			privateKey = keyFactory.generatePrivate(privateKeySpec);
+			
+			byte publicKeyData[] = Files.readAllBytes(Paths.get("C:\\Users\\Ck\\Desktop\\keys\\public_key.der"));
+			
+			
+			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyData);
+			
+			publicKey = keyFactory.generatePublic(publicKeySpec);
+			
+			Cipher cipherEncrypt = Cipher.getInstance("RSA");
+			cipherEncrypt.init(Cipher.ENCRYPT_MODE, privateKey);
+			byte encryptedData[] = cipherEncrypt.doFinal(textToCipher.getBytes());
+			//textEncrypted = new String(cipherEncrypt.doFinal(textToCipher.getBytes()));
+			textEncrypted = new String(encryptedData);
+			
+			Cipher cipherDecrypt = Cipher.getInstance("RSA");
+			cipherDecrypt.init(Cipher.DECRYPT_MODE, publicKey);
+			byte decryptedData[] = cipherDecrypt.doFinal(encryptedData);
+			textDecrypted = new String(decryptedData);
+			//textDecrypted = new String(cipherDecrypt.doFinal(textEncrypted.getBytes()));
+			
+			System.out.println("TextToCipher: "+textToCipher);
+			System.out.println("TextEncrypted: "+textEncrypted);
+			System.out.println("TextDecrypted: "+textDecrypted);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -80,6 +80,48 @@ public class ConnectController {
 		_url = "ws://"+ _url +"/ChatWebSocket/chat";
 		
 		try{
+			client = cc.onConnect(username, _url);
+			
+			MessageListener msgListener = client.addListener((msg) -> {
+				if(msg.getAction().equals(MessageHelper.ERROR_MESSAGE) 
+						&& msg.getCode() == MessageHelper.USERNAME_UNAVAILABLE_CODE){
+					
+					
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Usuario no disponible");
+					alert.setHeaderText(null);
+					alert.setContentText("El usuario que escogiste ya esta siendo usado por otra persona.");
+					alert.show();
+					
+					this.client = null;
+				}else if(msg.getAction().equals(MessageHelper.WELCOME_MESSAGE)){
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Conectado");
+					alert.setHeaderText(null);
+					alert.setContentText("Haz sido conectado con el servidor correctamente.");
+					alert.showAndWait();
+					
+					this.stage.close();
+				}
+			});
+			
+			this.stage.setOnHiding((event) -> {
+				System.out.println("[*] onClose ConnectView");
+				Platform.runLater(() -> this.client.removeListener(msgListener));
+			
+			});
+		}catch(ConnectException e){
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error al conectarse");
+			alert.setHeaderText(null);
+			alert.setContentText("No se ha podido conectarse con el servidor.");
+			alert.showAndWait();
+		}
+		
+		
+		/*
+		
+		try{
 			client = new ClientChat(new URI(_url), new User(username));
 			
 			client.setConsole(this.cc);
@@ -124,7 +166,7 @@ public class ConnectController {
 			alert.showAndWait();
 		}catch(Exception e){
 			System.out.println(e);
-		}
+		}*/
 	}
 	
 	public ClientChat getClientChat(){

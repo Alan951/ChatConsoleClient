@@ -18,12 +18,12 @@
       </ScrollPane>
       <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
         <menus>
-          <Menu mnemonicParsing="false" text="Archivo">
+          <Menu fx:id="menuArchivo" mnemonicParsing="false" text="Archivo">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onOpenConnect" text="Conectar" />
-                  <MenuItem mnemonicParsing="false" text="Desconectar" />
-                  <MenuItem mnemonicParsing="false" onAction="#onOpenCipherMng" text="Gestión Cifrado" />
-                  <MenuItem mnemonicParsing="false" text="Salir" />
+              <MenuItem fx:id="mConectar" mnemonicParsing="false" onAction="#onOpenConnect" text="Conectar" />
+                  <MenuItem fx:id="mDesconectar" disable="true" mnemonicParsing="false" onAction="#onDisconnect" text="Desconectar" />
+                  <MenuItem fx:id="mGstcifr" disable="true" mnemonicParsing="false" onAction="#onOpenCipherMng" text="Gestión Cifrado" />
+                  <MenuItem fx:id="mSalir" mnemonicParsing="false" text="Salir" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Ayuda">
