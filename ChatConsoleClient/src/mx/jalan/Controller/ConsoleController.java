@@ -71,8 +71,13 @@ public class ConsoleController {
 		this.stage = stage;
 		
 		stage.setTitle(CHAT_TITLE);
-		//onConnect("Jorge"+Math.random());
-		this.initListeners();
+		/*try {
+			onConnect("Jorge"+Math.random(), "ws://127.0.0.1:8080/ChatWebSocket/chat");
+		} catch (ConnectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		//this.initListeners();
 	}
 	
 	public ConsoleController(){}
@@ -130,8 +135,12 @@ public class ConsoleController {
 					url = url+":"+port;
 				}
 				
-				url = "ws://"+ url +"/ChatWebSocket/chat";
+				//url = "ws://"+ url +"/ChatWebSocket/chat";
+			}else{
+				url = "127.0.0.1:8080";
 			}
+			
+			url = "ws://"+ url +"/ChatWebSocket/chat";
 			
 			try{
 				System.out.println(url);
@@ -245,7 +254,7 @@ public class ConsoleController {
 		help = "IMPORTANTE: Solo es posible ingresar un comando a la vez y estos van seguidos de una diagonal. Ej: \"/conn Jorge\"\n"
 				+ "\t[Comando] - [Descripción]\n"
 				+ "\t/conn <nombre usuario> <ip:port> ó /connect <nombre usuario> <ip:port> - Sirve para conectarse al websocket. Es necesario especificar el nombre de usuario.\n"
-				+ "\t/online - Ver todos los usuarios conectados en el chat.\n"
+				//+ "\t/online - Ver todos los usuarios conectados en el chat.\n"
 				+ "\t/dis ó /disconnect - Sirve para desconectarse del websocket.\n"
 				+ "\t/clear - Limpia la terminal.\n"
 				+ "\t/pm <nombre usuario> - Envia un mensaje privado a un usuario en especifico.\n"
@@ -431,6 +440,10 @@ public class ConsoleController {
 				openCipherMng(message.getMessage());
 			}
 		});
+	}
+	
+	public void onSalir(){
+		Platform.exit();
 	}
 	
 	public Set<User> getUsers(){

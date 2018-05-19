@@ -29,6 +29,7 @@ import mx.jalan.Model.Message;
 import mx.jalan.Model.MessageHelper;
 import mx.jalan.WebSocket.MessageConstructor;
 import mx.jalan.WebSocket.MessageListener;
+import mx.jalan.WebSocket.Services.EncryptionService;
 
 public class CipherMngController {
 
@@ -73,7 +74,8 @@ public class CipherMngController {
 			if(msg.getAction().equals(MessageHelper.ENABLE_ENCRYPTION)){
 				
 				this.lblCifAct.setText("Cifrado actual: " + msg.getMessage() + ".");
-				this.cc.getClientChat().enableEncryptionAlgorithm();
+				//this.cc.getClientChat().enableEncryptionAlgorithm();
+				EncryptionService.getInstance().enableCipher(null);
 			}
 			
 			if(msg.getAction().equals(MessageHelper.DISABLE_ENCRYPTION)){
@@ -135,12 +137,15 @@ public class CipherMngController {
 		
 		EncryptionAlgorithm encSel = (EncryptionAlgorithm)this.toggleGroup.getSelectedToggle().getUserData();
 		
-		if(isValidateKeys()){
+		//if(isValidateKeys()){
+		if(true){
 			encSel = this.setKeys(encSel);
 			
-			this.cc.getClientChat().setEncryptionAlgorithmSelected(encSel);
-			this.cc.getClientChat().enableEncryptionAlgorithm();
-			System.out.println("EncryptionAlgorithm aplicado: " + this.cc.getClientChat().getEncryptionAlgorithmSelected());
+			//EncryptionService.getInstance().setEncryptionAlgorithmEnabled(encSel);
+			//this.cc.getClientChat().setEncryptionAlgorithmSelected(encSel);
+			EncryptionService.getInstance().enableCipher(encSel);
+			//this.cc.getClientChat().enableEncryptionAlgorithm();
+			//System.out.println("EncryptionAlgorithm aplicado: " + this.cc.getClientChat().getEncryptionAlgorithmSelected());
 		}
 	}
 	
@@ -157,12 +162,14 @@ public class CipherMngController {
 		
 		EncryptionAlgorithm encSel = (EncryptionAlgorithm)this.toggleGroup.getSelectedToggle().getUserData();
 		
-		if(isValidateKeys()){
+		//if(isValidateKeys()){
+		if(true){
 			//Set key properties to object.
 			encSel = this.setKeys(encSel);
 			
 			
-			this.cc.getClientChat().setEncryptionAlgorithmSelected(encSel);
+			//this.cc.getClientChat().setEncryptionAlgorithmSelected(encSel);
+			EncryptionService.getInstance().setEncryptionAlgorithmEnabled(encSel);
 			this.cc.getClientChat().sendMessage(MessageConstructor.enableEncryption(encSel));
 		}
 	}

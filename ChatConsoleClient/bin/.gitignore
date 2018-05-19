@@ -1,6 +1,2 @@
-/.classpath
-/.project
-/.settings/
-/build.fxbuild
 /mx/
-/ConnectView.fxml
+/AboutView.fxml

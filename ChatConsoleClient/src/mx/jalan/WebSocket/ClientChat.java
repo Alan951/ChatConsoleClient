@@ -39,6 +39,8 @@ import mx.jalan.Security.CipherFactory;
 import mx.jalan.Security.EncryptionAlgorithms;
 import mx.jalan.Security.Algorithms.CipherBase;
 import mx.jalan.Utils.JsonUtils;
+import mx.jalan.Utils.KeyUtils;
+import mx.jalan.WebSocket.Services.EncryptionService;
 
 @ClientEndpoint
 public class ClientChat {
@@ -52,7 +54,8 @@ public class ClientChat {
 	private List<EncryptionAlgorithm> encryptionSupport;
 	private List<MessageListener> messageListeners;
 	
-	private CipherBase cipher;
+	//private CipherBase cipher;
+	private EncryptionService encryptionService = EncryptionService.getInstance();
 	private EncryptionAlgorithm encyptAlgSelected;
 	
 	public ClientChat(URI url, User usuario)throws Exception{
@@ -68,7 +71,15 @@ public class ClientChat {
         
         this.encryptionSupport.add(new EncryptionAlgorithm(EncryptionAlgorithms.CAESAR, 
                 EncryptionAlgorithms.SYNC_CIPHER, 
-                syncProp));
+                syncProp,
+                Long.class
+        ));
+        
+        this.encryptionSupport.add(new EncryptionAlgorithm(EncryptionAlgorithms.DES, 
+                EncryptionAlgorithms.SYNC_CIPHER,
+                syncProp,
+                String.class
+        ));
         
         //Init listeners
         messageListeners = new ArrayList<MessageListener>();
@@ -84,6 +95,8 @@ public class ClientChat {
 		if(this.session.isOpen())
 			this.session.close();
 		System.out.println(reason);
+		Platform.runLater(() -> this.cc.onDisconnect());
+		//this.cc.onDisconnect();
 		//this.session = null;
 	}
 	
@@ -103,12 +116,13 @@ public class ClientChat {
 		}else{ //Probablemente sea un mensaje cifrado.
 			System.out.println("[DG - OnMessage Encrypted?]: "+msg);
 			
-			if(this.cipher == null){ //El mensaje esta cifrado y no hay un metodo criptografico en el cliente activado
+			//if(this.cipher == null){ //El mensaje esta cifrado y no hay un metodo criptografico en el cliente activado
+			if(!this.encryptionService.cipherActive()){
 				System.out.println("[Cipher not setted yet]");
 				return;
 			}
 			
-			String msgDecoded = this.cipher.decode(msg);
+			String msgDecoded = this.encryptionService.getCipher().decode(msg);
 			
 			if(JsonUtils.isJsonObject(msgDecoded)){
 				message = new Gson().fromJson(msgDecoded, Message.class);
@@ -154,7 +168,8 @@ public class ClientChat {
 				break;
 			case MessageHelper.DISABLE_ENCRYPTION:
 				cc.appendMessageText(1, "[SERVER] Se ha deshabilitado el metodo de cifrado.");
-				this.setCipher(null);
+				EncryptionService.getInstance().disableCipher();
+				//this.setCipher(null);
 				break;
 		}
 	}
@@ -167,15 +182,16 @@ public class ClientChat {
 		
 		String message = null;
 		
-		if(this.cipher != null){ //Si hay un cifrado activo
-			message = this.cipher.encode(jsonMessage); //Cifrar el mensaje
+		//if(this.cipher != null){ //Si hay un cifrado activo
+		if(this.encryptionService.cipherActive()){ //Si hay un cifrado activo
+			message = this.encryptionService.getCipher().encode(jsonMessage); //Cifrar el mensaje
 		}else{ //De lo contrario, enviarlo en texto plano.
 			message = jsonMessage; 
 		}
 		
 		try{
 			System.out.println("[DG - SendMessage]: "+msg.toString());
-			if(this.cipher != null)	System.out.println("[DG - SendMessage Encrypted]: " + message);
+			if(this.encryptionService.cipherActive())	System.out.println("[DG - SendMessage Encrypted]: " + message);
 			this.session.getBasicRemote().sendText(message);
 		}catch(IOException e){
 			e.printStackTrace();
@@ -194,33 +210,45 @@ public class ClientChat {
 		}
 	}
 	
-	public void setCipher(CipherBase cipher){
+	/*public void setCipher(CipherBase cipher){
 		this.cipher = cipher;
 	}
 	
 	public CipherBase getCipher(){
 		return this.cipher;
-	}
+	}*/
 	
-	public void enableEncryptionAlgorithm(){
-		this.cipher = new CipherFactory<String, Long>().getCipher(this.encyptAlgSelected.getAlgorithm());
-		if(!this.cipher.isAsyncCipher()){
-			this.cipher.setKey(Long.parseLong(this.encyptAlgSelected.getProperties().get("key")));
+	/*public void enableEncryptionAlgorithm(){
+		if(this.encyptAlgSelected.getAlgorithmType() == EncryptionAlgorithms.SYNC_CIPHER){ //Tipo de cifrado
+			if(this.encyptAlgSelected.getKeyType() == Long.class){ //Tipo de llave
+				String checkKey = this.encyptAlgSelected.getProperties().get("key");
+				if(KeyUtils.isValidKey(checkKey, encyptAlgSelected)){ //Validar llave
+					this.cipher = new CipherFactory<String, Long>().getCipher(this.encyptAlgSelected.getAlgorithm());
+					this.cipher.setKey(KeyUtils.getLongKey(checkKey));
+				}
+				
+			}else if(this.encyptAlgSelected.getKeyType() == String.class){
+				String checkKey = this.encyptAlgSelected.getProperties().get("key");
+				if(KeyUtils.isValidKey(checkKey, encyptAlgSelected)){ //Validar llave
+					this.cipher = new CipherFactory<String, String>().getCipher(this.encyptAlgSelected.getAlgorithm());
+					this.cipher.setKey(KeyUtils.getStringKey(checkKey));
+				}
+			}
 		}
-	}
+	}*/
 	
-	public void disableEncryptionAlgorithm(){
+	/*public void disableEncryptionAlgorithm(){
 		this.cipher = null;
 		//this.encyptAlgSelected = null;
-	}
+	}*/
 	
-	public void setEncryptionAlgorithmSelected(EncryptionAlgorithm encAlg){
+	/*public void setEncryptionAlgorithmSelected(EncryptionAlgorithm encAlg){
 		this.encyptAlgSelected = encAlg;
 	}
 	
 	public EncryptionAlgorithm getEncryptionAlgorithmSelected(){
 		return this.encyptAlgSelected;
-	}
+	}*/
 	
 	public void setConsole(ConsoleController cc){
 		this.cc = cc;
